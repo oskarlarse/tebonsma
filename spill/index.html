@@ -1,0 +1,192 @@
+<html>
+    <head>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.2.8/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.8/firebase-firestore.js"></script>
+<!-- TODO: Add SDKs for Firebase products that you want to use
+   https://firebase.google.com/docs/web/setup#available-libraries -->
+   <script>
+     // Your web app's Firebase configuration
+     var firebaseConfig = {
+              apiKey: "AIzaSyDa1zqiFJA_DKH8S_nhBAwXZtTo37Nhwg0",
+              authDomain: "meteorscoreboard.firebaseapp.com",
+              databaseURL: "https://meteorscoreboard-default-rtdb.europe-west1.firebasedatabase.app",
+              projectId: "meteorscoreboard",
+              storageBucket: "meteorscoreboard.appspot.com",
+              messagingSenderId: "322299452202",
+              appId: "1:322299452202:web:2528984d0bd73ddf665c53"
+            };
+     // Initialize Firebase
+     firebase.initializeApp(firebaseConfig);
+     </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <style>
+            body {
+                display: flex;
+                font-family: 'Atkinson Hyperlegible', sans-serif;                margin: 0;
+                background-color: black;
+            }
+            #score {
+                position: absolute;
+                left: 50%;
+                margin-left: -4.5rem;
+                font-size: 3rem;
+                z-index: 3;
+                color: white;
+            }
+            #meny {
+                position: absolute;
+                background-color: #cfb887;
+                border: 1rem #e7dcc3 solid;
+                border-radius: 10%;
+                z-index: 4;
+                left: 25%;
+                top: 20%;
+                height: 60%;
+                width: 50%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            p {
+                font-size: 100px;
+                text-align: center;
+                margin: 0;
+                font-weight: bold;
+                font-style: italic;
+            }
+            .small {
+                font-size: 40px;
+                font-weight: normal;
+                font-style: normal;
+            }
+            #scoreboard {
+                text-align: center;
+                position: absolute;
+                z-index: 3;
+                padding: 30px;
+                background-color: #cfb887;
+                border-bottom-right-radius: 5%;
+                border-bottom: 1rem #e7dcc3 solid;
+                border-right: 1rem #e7dcc3 solid;
+            }
+            #vanskelighetRange {
+                margin-top: 10px;
+                -webkit-appearance: none;
+                width: 60%;
+                background-color: #e7dcc3;
+                height: 10%;
+                outline: none;
+                opacity:0.7;
+                transition: opacity .15s ease-in-out;
+            }
+            #vanskelighetRange:hover {
+                opacity: 1;
+            }
+            #vanskelighetRange::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 10%;
+                height: 80%;
+                background: #203245;
+            }
+            
+            .unselectable { /* Gjør score og highscoretabellen umerkbar med mus og touch */
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            #fiendeFart {
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                font-size: 2rem;
+                z-index: 3;
+                color: white;
+            }
+
+            .anim {
+                width: 40%;
+                height: 10%;
+                cursor: pointer;
+                font-size: 20px;
+                font-weight: bold;
+                color: black;
+                border: 2px solid #203245;
+                border-radius: 10px;
+                box-shadow: 5px 5px 0 #203245,
+                    -5px -5px 0 #203245,
+                    -5px 5px 0 #203245,
+                    5px -5px 0 #203245;
+                transition: 100ms ease-in-out;
+            }
+
+            .anim:hover {
+                box-shadow: 20px 5px 0 #203245, -20px -5px 0 #203245;
+            }
+
+            .anim:focus {
+                outline: none;
+            }
+
+            @media (max-width: 1000px) { /* optimalisering for mobiltelefon og mindre enheter */
+                #meny {
+                    left: 5%;
+                    top: 20%;
+                    width: 90%;
+                }
+                #score {
+                    font-size: 6rem;
+                    margin-left: -3.5rem;
+                }
+                p {
+                font-size: 150px;
+ 
+                }
+                .small {
+                font-size: 70px;
+                }
+                #scoreboard {
+                    width: 100%;
+                    height: 20%;
+                    font-size: 40px;
+                    border-bottom-right-radius: 0%;
+                    border: 0;
+                    text-align: center;
+                }
+                .anim {
+                    width: 90%;
+                    height: 10rem;
+                }
+                #vanskelighetRange {
+                    width: 90%;
+                    height: 10rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="unselectable" id="score"></div>
+        <div class="unselectable" id="fiendeFart"></div>
+        <div id="meny">
+            <p>TEBONSMA</p>
+            <p>The game</p>
+            <button class="anim" id="start">Start spillet</button>
+            <p class="small">Vanskelighetsgrad</p>
+            <input id="vanskelighetRange" type="range" value="100" min="10" max="190" step="0.01" oninput="this.nextElementSibling.value = parseInt(this.value)*0.01; intervall = parseInt(this.value)">
+            <output class="small">1</output><p class="small"> sekund mellom hver ball</p> 
+        </div>
+        <table class="unselectable" id="scoreboard">
+            <tr>
+                <th>Navn</th>
+                <th>Score</th>
+            </tr>
+        </table> 
+        <canvas></canvas>
+        <script src="./index.js"></script>
+    </body>
+</html>
